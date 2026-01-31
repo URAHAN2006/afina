@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Athena Admin</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #1d2b64;
+    color: white;
+    padding: 20px;
+}
+h2 {
+    text-align: center;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    color: black;
+}
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+button {
+    padding: 5px 10px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.refresh {
+    background: green;
+    margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<h2>🔐 Athena Admin Panel</h2>
+
+<button class="refresh" onclick="load()">Оновити</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ім'я</th>
+            <th>Послуга</th>
+            <th>Дата</th>
+            <th>Час</th>
+            <th>Дія</th>
+        </tr>
+    </thead>
+    <tbody id="table"></tbody>
+</table>
+
+<script>
+async function load() {
+    const res = await fetch("http://127.0.0.1:8000/admin/appointments");
+    const data = await res.json();
+
+    const table = document.getElementById("table");
+    table.innerHTML = "";
+
+    data.forEach(app => {
+        const row = `
+            <tr>
+                <td>${app.id}</td>
+                <td>${app.name}</td>
+                <td>${app.service}</td>
+                <td>${app.date}</td>
+                <td>${app.time}</td>
+                <td><button onclick="del(${app.id})">Видалити</button></td>
+            </tr>
+        `;
+        table.innerHTML += row;
+    });
+}
+
+async function del(id) {
+    await fetch(`http://127.0.0.1:8000/admin/delete/${id}`, {
+        method: "DELETE"
+    });
+    load();
+}
+
+load();
+</script>
+
+</body>
+</html>

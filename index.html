@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Athena Beauty</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f8cdda, #1d2b64);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background: white;
+    width: 95%;
+    max-width: 500px;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.messages {
+    height: 250px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f4f4f4;
+    border-radius: 10px;
+}
+
+.user {
+    text-align: right;
+    color: #1d2b64;
+    margin: 5px 0;
+}
+
+.bot {
+    text-align: left;
+    color: #e91e63;
+    margin: 5px 0;
+}
+
+.controls {
+    display: flex;
+    gap: 5px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 8px;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    background: #e91e63;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.quick-buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.quick-buttons button {
+    background: #1d2b64;
+    font-size: 12px;
+}
+
+.calendar {
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Athena Beauty</h2>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="controls">
+        <input type="text" id="msg" placeholder="Напишіть повідомлення...">
+        <button onclick="send()">OK</button>
+    </div>
+
+    <div class="quick-buttons">
+        <button onclick="quickBook('Стрижка')">Стрижка</button>
+        <button onclick="quickBook('Фарбування')">Фарбування</button>
+        <button onclick="showAppointments()">Мої записи</button>
+    </div>
+
+    <div class="calendar">
+        <label>Дата:</label>
+        <input type="date" id="date">
+        <label>Час:</label>
+        <input type="time" id="time">
+    </div>
+</div>
+
+<script>
+async function send(message=null) {
+    const input = document.getElementById("msg");
+    const msg = message || input.value;
+    if (!msg) return;
+
+    const messages = document.getElementById("messages");
+
+    messages.innerHTML += `<div class="user">${msg}</div>`;
+
+    const res = await fetch(`http://127.0.0.1:8000/chat?q=${encodeURIComponent(msg)}`);
+    const data = await res.json();
+
+    messages.innerHTML += `<div class="bot">${data.response}</div>`;
+
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function quickBook(service) {
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+
+    if (!date || !time) {
+        alert("Оберіть дату і час");
+        return;
+    }
+
+    const msg = `Хочу записатись на ${service} ${date} о ${time} мене звати Клієнт`;
+    send(msg);
+}
+
+function showAppointments() {
+    send("Покажи записи");
+}
+</script>
+
+</body>
+</html>
