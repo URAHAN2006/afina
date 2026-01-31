@@ -1,23 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сторінка клієнта</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #e4ecf7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+}
+
+h1 {
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.salon-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4a90e2;
+    margin: 20px 0;
+}
+
+.status {
+    padding: 10px 20px;
+    border-radius: 20px;
+    display: inline-block;
+    background: #eaf3ff;
+    color: #357bd8;
+    font-weight: bold;
+}
+
+.footer {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #888;
+}
+</style>
+</head>
+
 <body>
 
-<h2>Athena Salon</h2>
-
-<input id="msg">
-<button onclick="send()">OK</button>
-
-<p id="out"></p>
+<div class="card">
+    <h1>Вітаємо 👋</h1>
+    <div class="salon-name" id="salonName"></div>
+    <div class="status">Заявка активна</div>
+    <div class="footer">Афіна CRM</div>
+</div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const salon = params.get("salon");
+function getParameterByName(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+}
 
-async function send() {
-    const msg = document.getElementById("msg").value;
-    const res = await fetch(`http://127.0.0.1:8000/chat/${salon}?q=${msg}`);
-    const data = await res.json();
-    document.getElementById("out").innerText = data.response;
+const salon = getParameterByName("salon");
+
+if (salon) {
+    document.getElementById("salonName").textContent = decodeURIComponent(salon);
+} else {
+    document.getElementById("salonName").textContent = "Невідомий салон";
 }
 </script>
 
