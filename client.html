@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Сторінка клієнта</title>
+<title>Заявка клієнта</title>
 
 <style>
 body {
@@ -13,7 +13,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .card {
@@ -21,36 +21,44 @@ body {
     padding: 40px;
     border-radius: 15px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-    text-align: center;
     max-width: 500px;
     width: 90%;
 }
 
 h1 {
-    margin-bottom: 10px;
+    text-align: center;
     color: #2c3e50;
 }
 
-.salon-name {
-    font-size: 24px;
-    font-weight: bold;
-    color: #4a90e2;
-    margin: 20px 0;
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
 }
 
-.status {
-    padding: 10px 20px;
-    border-radius: 20px;
-    display: inline-block;
-    background: #eaf3ff;
-    color: #357bd8;
-    font-weight: bold;
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #4a90e2;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
-.footer {
-    margin-top: 30px;
-    font-size: 14px;
-    color: #888;
+button:hover {
+    background: #357bd8;
+}
+
+.success {
+    margin-top: 15px;
+    color: green;
+    text-align: center;
 }
 </style>
 </head>
@@ -58,24 +66,51 @@ h1 {
 <body>
 
 <div class="card">
-    <h1>Вітаємо 👋</h1>
-    <div class="salon-name" id="salonName"></div>
-    <div class="status">Заявка активна</div>
-    <div class="footer">Афіна CRM</div>
+    <h1>Підтвердження заявки</h1>
+
+    <input type="text" id="salon" readonly>
+    <input type="text" id="name" placeholder="Ваше ім'я">
+    <input type="tel" id="phone" placeholder="Ваш телефон">
+
+    <button onclick="submitForm()">Підтвердити заявку</button>
+
+    <div class="success" id="successMsg"></div>
 </div>
 
 <script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbxEsbkv4hWCfrmZ-3v1FKuNtzSu4CeqS0LxTdNquEyp8lnWYjQO2x7AhamxrKmGriRb/exec";
+
 function getParameterByName(name) {
     const url = new URL(window.location.href);
     return url.searchParams.get(name);
 }
 
 const salon = getParameterByName("salon");
+document.getElementById("salon").value = salon ? decodeURIComponent(salon) : "Невідомий салон";
 
-if (salon) {
-    document.getElementById("salonName").textContent = decodeURIComponent(salon);
-} else {
-    document.getElementById("salonName").textContent = "Невідомий салон";
+function submitForm() {
+    const data = {
+        salon: document.getElementById("salon").value,
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value
+    };
+
+    if (!data.name || !data.phone) {
+        alert("Заповніть всі поля");
+        return;
+    }
+
+    fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        document.getElementById("successMsg").innerText = "Заявку успішно відправлено!";
+        document.getElementById("name").value = "";
+        document.getElementById("phone").value = "";
+    })
+    .catch(error => alert("Помилка відправки"));
 }
 </script>
 
